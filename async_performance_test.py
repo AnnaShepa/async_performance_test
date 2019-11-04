@@ -137,9 +137,9 @@ if __name__ == '__main__':
                         break
                     some_uuid_open = False
                     for uuid in bulk_uuids_current_run:
-                        status_response = requests.get(host + '/rest/V1/bulk/' + uuid + '/operation-status/4',
-                                                       headers=query_headers)
-                        if status_response.json() != 0:
+                        bulk_inprogress_count = requests.get(host + '/rest/V1/bulk/' + uuid + '/operation-status/4',
+                                                             headers=query_headers)
+                        if bulk_inprogress_count.json() != 0:
                             logger.info('Method: ' + method + ' Batch size: ' + str(j) + WARNING_PRODUCTS_IN_PROGRESS)
                             some_uuid_open = True
                             time.sleep(1)
@@ -160,9 +160,9 @@ if __name__ == '__main__':
                         logger.info(
                             'Method: ' + method + ' Batch size: ' + str(j) + TIMEOUT_MESSAGE_ON_PRODUCT_CREATION)
                         break
-                    status_response = requests.get(host + '/rest/V1/bulk/' + bulk_uuid + '/operation-status/4',
-                                                   headers=query_headers)
-                    if status_response.json() != 0:
+                    bulk_inprogress_count = requests.get(host + '/rest/V1/bulk/' + bulk_uuid + '/operation-status/4',
+                                                         headers=query_headers)
+                    if bulk_inprogress_count.json() != 0:
                         logger.info('Method: ' + method + ' Batch size: ' + str(j) + WARNING_PRODUCTS_IN_PROGRESS)
                         some_uuid_open = True
                         time.sleep(1)
