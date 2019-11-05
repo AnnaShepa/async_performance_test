@@ -3,8 +3,7 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime
-
+import datetime
 import matplotlib.pyplot as plt
 import requests
 
@@ -85,6 +84,7 @@ if __name__ == '__main__':
             elapsed_current_run = []
             bulk_uuids_current_run = []
             if method == 'sync':
+                request = []
                 start_time = timestamp_s()
                 logger.info(
                     'RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(j) + ' Sending started')
@@ -97,6 +97,7 @@ if __name__ == '__main__':
                     logger.info('RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(
                         j) + ' ItemID: ' + str(i) + ' Is sent')
             elif method == 'async':
+                request = []
                 start_time = timestamp_s()
                 logger.info(
                     'RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(j) + ' Sending started')
