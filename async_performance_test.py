@@ -23,7 +23,7 @@ start_timestamps = {i: {} for i in methods}
 total_time = {i: {} for i in methods}
 success_created_percentage = {i: {} for i in methods}
 
-TIMEOUT_S = 10
+TIMEOUT_S = 300
 
 PATH_TO_SAVE_FOLDER = 'Results/' + datetime.strftime(datetime.now(), '%d-%m-%Y %H-%M')
 PATH_TO_SAVE_IMAGES = PATH_TO_SAVE_FOLDER + "/images/"
@@ -112,69 +112,71 @@ if __name__ == '__main__':
     for j in batch_size_per_run:
         for method in methods:
             elapsed_current_run = []
+            bulk_uuids_current_run = []
             if method == 'sync':
                 start_time = timestamp_s()
+                logger.info(
+                    'RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(j) + ' Sending started')
                 for i in range(1, j + 1):
                     item_id = method + "_" + str(start_time) + "_" + str(i)
                     request = create_item_request_body(item_id)
                     response = requests.post(host + '/rest/V1/products', headers=query_headers, json=request)
                     elapsed_current_run.append(response.elapsed.total_seconds())
+                    logger.info('RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(
+                        j) + ' ItemID: ' + str(i) + ' Is sent')
             elif method == 'async':
-                bulk_uuids_current_run = []
                 start_time = timestamp_s()
+                logger.info(
+                    'RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(j) + ' Sending started')
                 for i in range(1, j + 1):
                     item_id = method + "_" + str(start_time) + "_" + str(i)
                     request = create_item_request_body(item_id)
                     response = requests.post(host + '/rest/async/V1/products', headers=query_headers, json=request)
                     elapsed_current_run.append(response.elapsed.total_seconds())
                     bulk_uuids_current_run.append(response.json()['bulk_uuid'])
-                some_uuid_open = True
-                time_to_timeout = time.time() + TIMEOUT_S
-                while some_uuid_open:
-                    if time.time() > time_to_timeout:
-                        logger.info(
-                            'Method: ' + method + ' Batch size: ' + str(j) + TIMEOUT_MESSAGE_ON_PRODUCT_CREATION)
-                        break
-                    some_uuid_open = False
-                    for uuid in bulk_uuids_current_run:
-                        bulk_inprogress_count = requests.get(host + '/rest/V1/bulk/' + uuid + '/operation-status/4',
-                                                             headers=query_headers)
-                        if bulk_inprogress_count.json() != 0:
-                            logger.info('Method: ' + method + ' Batch size: ' + str(j) + WARNING_PRODUCTS_IN_PROGRESS)
-                            some_uuid_open = True
-                            time.sleep(1)
-                            break
+                    logger.info('RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(
+                        j) + ' ItemID: ' + str(i) + ' Is sent')
             elif method == 'bulk':
                 request = []
                 start_time = timestamp_s()
+                logger.info(
+                    'RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(j) + ' Sending started')
                 for i in range(1, j + 1):
                     item_id = method + "_" + str(start_time) + "_" + str(i)
                     request.append(create_item_request_body(item_id))
                 response = requests.post(host + '/rest/async/bulk/V1/products', headers=query_headers, json=request)
-                bulk_uuid = response.json()['bulk_uuid']
+                bulk_uuids_current_run.append(response.json()['bulk_uuid'])
                 elapsed_current_run.append(response.elapsed.total_seconds())
-                some_uuid_open = True
-                time_to_timeout = time.time() + TIMEOUT_S
-                while some_uuid_open:
-                    if time.time() > time_to_timeout:
-                        logger.info(
-                            'Method: ' + method + ' Batch size: ' + str(j) + TIMEOUT_MESSAGE_ON_PRODUCT_CREATION)
-                        break
-                    bulk_inprogress_count = requests.get(host + '/rest/V1/bulk/' + bulk_uuid + '/operation-status/4',
-                                                         headers=query_headers)
-                    if bulk_inprogress_count.json() != 0:
-                        logger.info('Method: ' + method + ' Batch size: ' + str(j) + WARNING_PRODUCTS_IN_PROGRESS)
-                        some_uuid_open = True
-                        time.sleep(1)
-                        continue
-                    else:
-                        some_uuid_open = False
+                logger.info('RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(j) + ' Is sent')
             else:
                 logger.info('Method: ' + method + ' is unexpected method')
                 continue
+
+            some_uuid_open = True
+            time_to_timeout = time.time() + TIMEOUT_S
+            while some_uuid_open:
+                if time.time() > time_to_timeout:
+                    logger.info(
+                        'RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(
+                            j) + ' ' + TIMEOUT_MESSAGE_ON_PRODUCT_CREATION)
+                    break
+                some_uuid_open = False
+                for uuid in bulk_uuids_current_run:
+                    curent_butch_progress = requests.get(host + '/rest/V1/bulk/' + uuid + '/status',
+                                                         headers=query_headers)
+                    if 4 in [curent_butch_progress.json()["operations_list"][k]["status"] for k in [0, len(curent_butch_progress.json()["operations_list"]) - 1]]:
+                        logger.info('RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(
+                            j) + ' ' + WARNING_PRODUCTS_IN_PROGRESS)
+                        some_uuid_open = True
+                        time.sleep(3)
+                        break
+                    else:
+                        bulk_uuids_current_run.remove(uuid)
+
             elapsed_sum_per_method_per_run[method][j] = sum(elapsed_current_run)
             start_timestamps[method][j] = start_time
-            logger.info('Method: ' + method + ' Batch size: ' + str(j) + ' Successfully sent')
+            logger.info(
+                'RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(j) + ' Sending finished')
 
     with open(PATH_TO_SAVE_CSV + 'result_request_time.csv', 'w') as f:
         w = csv.writer(f)
@@ -189,31 +191,10 @@ if __name__ == '__main__':
                  [elapsed_sum_per_method_per_run[method_to_show][j]
                   for j in elapsed_sum_per_method_per_run[method_to_show].keys()],
                  label=method_to_show, color=colors[methods.index(method_to_show)])
-    plt.ylabel('Sum time for batch, s')
+    plt.ylabel('Sum response time for batch, s')
     plt.xlabel('Sent batch size')
     plt.legend(loc='upper left')
     plt.savefig(PATH_TO_SAVE_IMAGES + 'Sum response time for every batch.png')
-
-    # for method in start_timestamps.keys():
-    #     for batch_size in start_timestamps[method].keys():
-    #         start_timestamp = start_timestamps[method][batch_size]
-    #         search_criteria = method + "_" + str(start_timestamp) + "_%"
-    #         query_variables = {
-    #             'search_criteria': search_criteria,
-    #             'pageSize': batch_size
-    #         }
-    #         query = get_end_time_per_run_request_body()
-    #         created_orders_per_run = get_end_time_per_batch_request(host, query, query_variables)
-    #         created_items_count = len(created_orders_per_run['data']['products']['items'])
-    #         success_created_percentage[method][batch_size] = created_items_count * 100 / batch_size
-    #         if created_items_count > 0:
-    #             max_timestamp_per_run = max([datetime.timestamp(
-    #                 datetime.strptime(created_orders_per_run['data']['products']['items'][k]['created_at'], '%Y-%m-%d %H:%M:%S'))
-    #                 for k in range(0, created_items_count)])
-    #             total_time[method][batch_size] = max_timestamp_per_run - start_timestamp
-    #         else:
-    #             logger.info('Method: ' + method + ' Batch size: ' + str(batch_size) + ': ' 'There\'s no item was created')
-    #             total_time[method][batch_size] = 0
 
     for method in start_timestamps.keys():
         for batch_size in start_timestamps[method].keys():
@@ -233,7 +214,8 @@ if __name__ == '__main__':
                 total_time[method][batch_size] = int(max_timestamp_per_run - start_timestamp)
             else:
                 logger.info(
-                    'Method: ' + method + ' Batch size: ' + str(batch_size) + ': ' 'There\'s no item was created. ' + 'Start timestamp: ' + str(start_timestamp))
+                    'RunID: ' + str(start_time) + ' Method: ' + method + ' Batch size: ' + str(
+                        batch_size) + ' There\'s no item was created. ')
                 total_time[method][batch_size] = 0
 
     with open(PATH_TO_SAVE_CSV + 'total_time.csv', 'w') as f:
