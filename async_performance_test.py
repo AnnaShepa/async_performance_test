@@ -233,7 +233,7 @@ if __name__ == '__main__':
                 total_time[method][batch_size] = int(max_timestamp_per_run - start_timestamp)
             else:
                 logger.info(
-                    'Method: ' + method + ' Batch size: ' + str(batch_size) + ': ' 'There\'s no item was created')
+                    'Method: ' + method + ' Batch size: ' + str(batch_size) + ': ' 'There\'s no item was created. ' + 'Start timestamp: ' + str(start_timestamp))
                 total_time[method][batch_size] = 0
 
     with open(PATH_TO_SAVE_CSV + 'total_time.csv', 'w') as f:
