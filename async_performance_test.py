@@ -1,5 +1,5 @@
 import csv
-import datetime
+from datetime import datetime
 import logging
 import os
 import sys
