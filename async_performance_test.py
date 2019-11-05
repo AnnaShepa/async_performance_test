@@ -57,35 +57,6 @@ def create_item_request_body(item_id):
         }
     }
 
-
-def get_end_time_per_run_request_body():
-    return """
-    query ($search_criteria: String!, $pageSize: Int)
-    {
-      products(
-        filter: { sku: { like: $search_criteria } }
-        pageSize: $pageSize
-        currentPage: 1
-        sort: { name: DESC }
-      ) {
-        items {
-          created_at
-          sku
-        }
-      }
-    }
-    """
-
-
-def get_end_time_per_batch_request(host, query, variables):
-    endpoint = host + '/graphql'
-    request = requests.get(endpoint, json={'query': query, 'variables': variables})
-    if request.status_code == 200:
-        return request.json()
-    else:
-        raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, query))
-
-
 if __name__ == '__main__':
 
     logger = logging.getLogger(__name__)
