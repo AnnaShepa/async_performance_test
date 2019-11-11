@@ -63,21 +63,21 @@ if __name__ == '__main__':
                 endpoint = host + '/rest/V1/' + entity.search_endpoint_key + '?searchCriteria[pageSize]=' + str(
                     batch_size) + '&searchCriteria[filterGroups][0][filters][0][field]=' + entity.search_by_field + \
                            '&searchCriteria[filterGroups][0][filters][0][value]=' + method.name + '_' + str(
-                    batch.timestamp) + '%25&searchCriteria[filterGroups][0][filters][0][condition_type]=like'
-                request = requests.get(endpoint, headers=query_headers)
-                created_items = request.json()
+                    batch.start_timestamp) + '%25&searchCriteria[filterGroups][0][filters][0][condition_type]=like'
+                response = requests.get(endpoint, headers=query_headers)
+                created_items = response.json()
                 created_items_count = int(created_items['total_count'])
                 success_created_percentage[method][batch_size] = created_items_count * 100 / batch_size
                 if created_items_count > 0:
                     max_timestamp = max([datetime.timestamp(
                         datetime.strptime(created_items['items'][k]['created_at'], '%Y-%m-%d %H:%M:%S'))
                         for k in range(0, created_items_count)])
-                    total_time[method][batch_size] = int(max_timestamp - batch.timestamp)
+                    total_time[method][batch_size] = int(max_timestamp - batch.start_timestamp)
                 else:
                     logger.info(
                         'Entity: ' + entity.name + ' RunID: ' + str(
-                            batch.timestamp) + ' Method: ' + method.name + ' Batch size: ' + str(
-                            batch_size) + ' There\'s no item was created. ')
+                            batch.start_timestamp) + ' Method: ' + method.name + ' Batch size: ' + str(
+                            batch_size) + ' There\'s no item was created.')
                 del batch
 
         Reporting.create_csv(PATH_TO_SAVE_CSV, entity.name + ' summary_response_time', methods, batch_sizes_list,

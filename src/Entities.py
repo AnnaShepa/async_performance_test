@@ -4,15 +4,15 @@ from datetime import datetime
 
 class Batch():
     def __init__(self, size, entity):
-        self._timestamp = int(datetime.timestamp(datetime.utcnow()))
+        self._start_timestamp = int(datetime.timestamp(datetime.utcnow()))
         self._size = size
         self._entity = entity
         self.elapsed_sum = 0
         self.bulk_uuids = []
 
     @property
-    def timestamp(self):
-        return self._timestamp
+    def start_timestamp(self):
+        return self._start_timestamp
 
     @property
     def size(self):
