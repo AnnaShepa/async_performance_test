@@ -1,4 +1,5 @@
 import csv
+
 import matplotlib.pyplot as plt
 
 WARNING_PRODUCTS_IN_PROGRESS = 'Some products are still in progress'
@@ -27,5 +28,5 @@ def create_png(path_to_save, name, methods, values):
 
 
 def log_record(logger, entity_name, run_id, method_name, batch_size, message):
-    logger.info('Entity: ' + entity_name + ' RunID: ' + str(run_id) + ' Method: ' + method_name + ' Batch size: ' + str(
-        batch_size) + ' ' + message)
+    logger.info('Entity: ' + str(entity_name) + ' RunID: ' + str(run_id) + ' Method: ' + str(
+        method_name) + ' Batch size: ' + str(batch_size) + ' ' + str(message))
