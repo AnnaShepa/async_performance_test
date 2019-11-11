@@ -3,11 +3,12 @@ import os
 import sys
 from datetime import datetime
 
-import requests
+import src.Reporting as Reporting
+from src.Reporting import log_record
 
-from src import Reporting
+import requests
 from src.Entities import Batch
-from src.Entities import Simple_product, Customer
+from src.Entities import SimpleProduct, Customer
 from src.Methods import Sync, Async, Bulk
 
 host = sys.argv[1]
@@ -21,7 +22,7 @@ PATH_TO_SAVE_CSV = PATH_TO_SAVE_FOLDER + "/csvs/"
 query_headers = {'Authorization': 'Bearer ' + token}
 batch_sizes_list = [1] + [i for i in range(10, max_batch_size + 1, 10)]
 
-entities = [Simple_product(), Customer()]
+entities = [SimpleProduct(), Customer()]
 methods = [Sync(), Async(), Bulk()]
 
 elapsed_sum = {i: {j: 0 for j in batch_sizes_list} for i in methods}
@@ -77,6 +78,7 @@ if __name__ == '__main__':
                         'Entity: ' + entity.name + ' RunID: ' + str(
                             batch.timestamp) + ' Method: ' + method.name + ' Batch size: ' + str(
                             batch_size) + ' There\'s no item was created. ')
+                del batch
 
         Reporting.create_csv(PATH_TO_SAVE_CSV, entity.name + ' summary_response_time', methods, batch_sizes_list,
                              elapsed_sum)

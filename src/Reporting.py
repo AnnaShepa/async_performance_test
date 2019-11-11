@@ -6,6 +6,7 @@ WARNING_PRODUCTS_IN_PROGRESS = 'Some products are still in progress'
 TIMEOUT_MESSAGE_ON_PRODUCT_CREATION = 'Timeout on waiting for items creation'
 MESSAGE_SENDING_STARTED = 'Sending started'
 MESSAGE_SENDING_FINISHED = 'Sending finished'
+MESSAGE_ITEM_SENT = 'Item sent'
 
 
 def create_csv(path_to_save, name, methods, column_headers, values):

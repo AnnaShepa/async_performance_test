@@ -22,6 +22,7 @@ class Batch():
     def entity(self):
         return self._entity
 
+
 class Entity(ABC):
     name: str
     create_endpoint_key: str
@@ -33,12 +34,11 @@ class Entity(ABC):
         pass
 
 
-class Simple_product(Entity):
-    def __init__(self):
-        self.name = 'Simple Product'
-        self.create_endpoint_key = 'products'
-        self.search_endpoint_key = 'products'
-        self.search_by_field = 'sku'
+class SimpleProduct(Entity):
+    name = 'Simple Product'
+    create_endpoint_key = 'products'
+    search_endpoint_key = 'products'
+    search_by_field = 'sku'
 
     def create_request_body(self, item_id):
         return {
