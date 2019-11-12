@@ -3,10 +3,9 @@ import os
 import sys
 from datetime import datetime
 
-import src.Reporting as Reporting
-from src.Reporting import log_record
-
 import requests
+
+import src.Reporting as Reporting
 from src.Entities import Batch
 from src.Entities import SimpleProduct, Customer
 from src.Methods import Sync, Async, Bulk
@@ -82,8 +81,7 @@ if __name__ == '__main__':
 
         Reporting.create_csv(PATH_TO_SAVE_CSV, entity.name + ' summary_response_time', methods, batch_sizes_list,
                              elapsed_sum)
-        Reporting.create_png(PATH_TO_SAVE_IMAGES, entity.name + ' Summary response time, s', methods,
-                             elapsed_sum)
+        Reporting.create_png(PATH_TO_SAVE_IMAGES, entity.name + ' Summary response time, s', methods, elapsed_sum)
 
         Reporting.create_csv(PATH_TO_SAVE_CSV, entity.name + ' total_time', methods, batch_sizes_list, total_time)
         Reporting.create_png(PATH_TO_SAVE_IMAGES, entity.name + ' Total time, s', methods, total_time)
