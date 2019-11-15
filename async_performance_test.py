@@ -1,3 +1,4 @@
+#!/usr/bin/env
 import logging
 import os
 import sys
