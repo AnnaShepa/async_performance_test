@@ -23,7 +23,7 @@ def create_png(path_to_save, name, methods, values):
     for method_to_show in methods:
         plt.plot(list(values[method_to_show].keys()),
                  [values[method_to_show][j] for j in values[method_to_show].keys()], label=method_to_show.name)
-    plt.xlabel('Sent batch size')
+    plt.xlabel('Batch size')
     plt.legend(loc='upper left')
     plt.savefig(path_to_save + name + '.png')
 
