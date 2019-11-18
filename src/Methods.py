@@ -30,12 +30,11 @@ class Method(ABC):
                 curent_butch_progress = requests.get(host + '/rest/V1/bulk/' + uuid + '/status',
                                                      headers=query_headers)
                 # Check that no of sent requests have status code 4 (Open)
-                if 4 in [curent_butch_progress.json()["operations_list"][k]["status"] for k in
-                         [0, len(curent_butch_progress.json()["operations_list"]) - 1]]:
+                if 4 in [k["status"] for k in curent_butch_progress.json()["operations_list"]]:
                     log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size,
                                Reporting.WARNING_PRODUCTS_IN_PROGRESS)
                     some_uuid_open = True
-                    time.sleep(5)
+                    time.sleep(10)
                     break
                 else:
                     # In case some request already done (not 4) it shouldn't be checked next time
