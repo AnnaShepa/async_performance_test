@@ -3,3 +3,5 @@ Script accept 3 arguments on run:
 - host
 - tocken to send API calls
 - max_batch_size (several runs will be done with items amount from 1 to max_batch_size with step 10)
+
+To run the Script you will need to instull requests and matplotlib libraries.
