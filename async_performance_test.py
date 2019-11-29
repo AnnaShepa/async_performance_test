@@ -8,7 +8,7 @@ import requests
 
 import src.Reporting as Reporting
 from src.Entities import Batch
-from src.Entities import SimpleProduct, Customer
+from src.Entities import SimpleProduct, ConfigurableProduct, Customer
 from src.Methods import Sync, Async, Bulk
 
 host = sys.argv[1]
@@ -22,7 +22,7 @@ PATH_TO_SAVE_CSV = PATH_TO_SAVE_FOLDER + "/csvs/"
 query_headers = {'Authorization': 'Bearer ' + token}
 batch_sizes_list = [1] + [i for i in range(10, max_batch_size + 1, 10)]
 
-entities = [SimpleProduct(), Customer()]
+entities = [SimpleProduct(), ConfigurableProduct(), Customer()]
 methods = [Sync(), Async(), Bulk()]
 
 elapsed_sum = {i: {j: 0 for j in batch_sizes_list} for i in methods}
@@ -59,7 +59,6 @@ if __name__ == '__main__':
                 method.send_batch(batch, host, query_headers, logger)
                 method.wait_until_all_requests_processed(batch, host, query_headers, logger)
                 elapsed_sum[method][batch_size] = batch.elapsed_sum
-
                 endpoint = host + '/rest/V1/' + entity.search_endpoint_key + '?searchCriteria[pageSize]=' + str(
                     batch_size) + '&searchCriteria[filterGroups][0][filters][0][field]=' + entity.search_by_field + \
                            '&searchCriteria[filterGroups][0][filters][0][value]=' + method.name + '_' + str(

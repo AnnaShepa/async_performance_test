@@ -61,6 +61,54 @@ class SimpleProduct(Entity):
         }
 
 
+class ConfigurableProduct(Entity):
+    name = 'Configurable Product'
+    create_endpoint_key = 'products'
+    search_endpoint_key = 'products'
+    search_by_field = 'sku'
+
+    def create_request_body(self, item_id):
+        return {
+            "product": {
+                "sku": item_id,
+                "name": item_id,
+                "attribute_set_id": 4,
+                "price": "0",
+                "status": 1,
+                "visibility": 4,
+                "type_id": "configurable",
+                "weight": 0.5,
+                "extension_attributes": {
+                    "category_links": [
+                        {
+                            "position": 0,
+                            "category_id": "3"
+                        }
+                    ],
+                    "configurable_product_options": [
+                        {
+                            "attribute_id": "93",
+                            "label": "Color",
+                            "position": 0,
+                            "is_use_default": "false",
+                            "values": [
+                                {
+                                    "value_index": 14
+                                },
+                                {
+                                    "value_index": 43
+                                },
+                                {
+                                    "value_index": 47
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+
+
 class Customer(Entity):
     name = 'Customer'
     create_endpoint_key = 'customers'
