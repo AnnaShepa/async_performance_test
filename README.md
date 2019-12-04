@@ -6,6 +6,6 @@ The script tests performance using different methods of import through REST API 
 Script accept 3 arguments on run:
 - host
 - tocken to send API calls
-- max_batch_size (several runs will be done with items amount from 1 to max_batch_size with step 10)
+- max_batch_size (several runs will be done with items amount from 1 to max_batch_size with step 10, e.g. [1, 10, 20])
 
 To run the Script you will need to install requests and matplotlib libraries.
