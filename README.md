@@ -9,3 +9,5 @@ Script accept 3 arguments on run:
 - max_batch_size (several runs will be done with items amount from 1 to max_batch_size with step 10, e.g. [1, 10, 20])
 
 To run the Script you will need to install requests and matplotlib libraries.
+
+More information and results are described here: https://community.magento.com/t5/Magento-DevBlog/Asynchronous-Bulk-API-Performance-Test/ba-p/414878
