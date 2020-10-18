@@ -18,8 +18,8 @@ max_batch_size = int(sys.argv[3])
 query_headers = {'Authorization': 'Bearer ' + token}
 batch_sizes_list = [1] + [i for i in range(10, max_batch_size + 1, 10)]
 
-entities = [SimpleProduct()]
-methods = [Sync()]
+entities = [SimpleProduct(), ConfigurableProduct(), Customer()]
+methods = [Sync(), Async(), Bulk()]
 
 elapsed_sum = {i: {j: 0 for j in batch_sizes_list} for i in methods}
 total_time = {i: {j: 0 for j in batch_sizes_list} for i in methods}

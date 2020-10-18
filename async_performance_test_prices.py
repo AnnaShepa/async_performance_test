@@ -17,7 +17,7 @@ batch_size = int(sys.argv[3])
 ids_file_name = sys.argv[4]
 
 ids_file = open(ids_file_name, "r")
-ids = ids_file.readlines()
+ids = ids_file.read().splitlines()
 ids_file.close()
 
 query_headers = {'Authorization': 'Bearer ' + token}
