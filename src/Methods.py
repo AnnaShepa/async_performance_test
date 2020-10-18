@@ -59,7 +59,7 @@ class Sync(Method):
             log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size,
                        ' ItemID: ' + str(i) + ' ' + Reporting.MESSAGE_ITEM_SENT)
             batch.elapsed_sum += response.elapsed.total_seconds()
-        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER, self.name, ids)
+        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", self.name, ids)
 
     def wait_until_all_requests_processed(self, batch, host, query_headers, logger):
         log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size,
@@ -83,7 +83,7 @@ class Async(Method):
                        ' ItemID: ' + str(i) + ' ' + Reporting.MESSAGE_ITEM_SENT)
             batch.elapsed_sum += response.elapsed.total_seconds()
             batch.bulk_uuids.append(response.json()['bulk_uuid'])
-        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER, self.name, ids)
+        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", self.name, ids)
 
 
 class Bulk(Method):
@@ -104,7 +104,7 @@ class Bulk(Method):
         log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size, Reporting.MESSAGE_ITEM_SENT)
         batch.bulk_uuids.append(response.json()['bulk_uuid'])
         batch.elapsed_sum = response.elapsed.total_seconds()
-        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER, self.name, ids)
+        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", self.name, ids)
 
 
 class BulkUpdatePricesWithinOneDict(Method):
