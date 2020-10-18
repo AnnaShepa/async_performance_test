@@ -124,3 +124,21 @@ class Customer(Entity):
             },
             "password": "Strong-Password"
         }
+
+
+class Price(Entity):
+    name = 'Price'
+    create_endpoint_key = 'prices'
+    search_endpoint_key = 'products'
+    search_by_field = 'sku'
+
+    def create_request_body(self, item_id):
+        return {
+            "prices": [
+                {
+                    "price": 20,
+                    "store_id": 0,
+                    "sku": item_id
+                }
+            ]
+        }
