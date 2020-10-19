@@ -19,7 +19,7 @@ run_id = sys.argv[4]
 query_headers = {'Authorization': 'Bearer ' + token}
 
 entity = Price()
-methods = [BulkUpdatePricesWithinOneDict(run_id, batch_size)]
+methods = [BulkUpdatePricesWithinOneDict(run_id, batch_size), BulkUpdatePricesWithinListOfDicts(run_id, batch_size)]
 
 elapsed_sum = {i: {batch_size: 0} for i in methods}
 total_time = {i: {batch_size: 0} for i in methods}
