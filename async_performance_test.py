@@ -15,10 +15,6 @@ host = sys.argv[1]
 token = sys.argv[2]
 max_batch_size = int(sys.argv[3])
 
-PATH_TO_SAVE_FOLDER = 'Results/' + datetime.strftime(datetime.now(), '%d-%m-%Y %H-%M')
-PATH_TO_SAVE_IMAGES = PATH_TO_SAVE_FOLDER + "/images/"
-PATH_TO_SAVE_CSV = PATH_TO_SAVE_FOLDER + "/csvs/"
-
 query_headers = {'Authorization': 'Bearer ' + token}
 batch_sizes_list = [1] + [i for i in range(10, max_batch_size + 1, 10)]
 
@@ -38,16 +34,16 @@ if __name__ == '__main__':
     try:
         if not os.path.exists('Results'):
             os.makedirs('Results')
-        os.makedirs(PATH_TO_SAVE_FOLDER)
-        os.makedirs(PATH_TO_SAVE_IMAGES)
-        os.makedirs(PATH_TO_SAVE_CSV)
+        os.makedirs(Reporting.PATH_TO_SAVE_FOLDER)
+        os.makedirs(Reporting.PATH_TO_SAVE_IMAGES)
+        os.makedirs(Reporting.PATH_TO_SAVE_CSV)
     except OSError:
         logger.info("Fail on batch folder creation, results will be saved in current directory")
         PATH_TO_SAVE_FOLDER = ''
         PATH_TO_SAVE_IMAGES = ''
         PATH_TO_SAVE_CSV = ''
 
-    handler = logging.FileHandler(PATH_TO_SAVE_FOLDER + '/log.log')
+    handler = logging.FileHandler(Reporting.PATH_TO_SAVE_FOLDER + '/log.log')
     handler.setLevel(logging.INFO)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -79,14 +75,14 @@ if __name__ == '__main__':
                             batch_size) + ' There\'s no item was created.')
                 del batch
 
-        Reporting.create_csv(PATH_TO_SAVE_CSV, entity.name + ' summary_response_time', methods, batch_sizes_list,
+        Reporting.create_csv(Reporting.PATH_TO_SAVE_CSV, entity.name + ' summary_response_time', methods, batch_sizes_list,
                              elapsed_sum)
-        Reporting.create_png(PATH_TO_SAVE_IMAGES, entity.name + ' Summary response time, s', methods, elapsed_sum)
+        Reporting.create_png(Reporting.PATH_TO_SAVE_IMAGES, entity.name + ' Summary response time, s', methods, elapsed_sum)
 
-        Reporting.create_csv(PATH_TO_SAVE_CSV, entity.name + ' total_time', methods, batch_sizes_list, total_time)
-        Reporting.create_png(PATH_TO_SAVE_IMAGES, entity.name + ' Total time, s', methods, total_time)
+        Reporting.create_csv(Reporting.PATH_TO_SAVE_CSV, entity.name + ' total_time', methods, batch_sizes_list, total_time)
+        Reporting.create_png(Reporting.PATH_TO_SAVE_IMAGES, entity.name + ' Total time, s', methods, total_time)
 
-        Reporting.create_csv(PATH_TO_SAVE_CSV, entity.name + ' total_success_percentage', methods, batch_sizes_list,
+        Reporting.create_csv(Reporting.PATH_TO_SAVE_CSV, entity.name + ' total_success_percentage', methods, batch_sizes_list,
                              success_created_percentage)
-        Reporting.create_png(PATH_TO_SAVE_IMAGES, entity.name + ' Succeed created items, %', methods,
+        Reporting.create_png(Reporting.PATH_TO_SAVE_IMAGES, entity.name + ' Succeed created items, %', methods,
                              success_created_percentage)
