@@ -59,7 +59,7 @@ class Sync(Method):
             log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size,
                        ' ItemID: ' + str(i) + ' ' + Reporting.MESSAGE_ITEM_SENT)
             batch.elapsed_sum += response.elapsed.total_seconds()
-        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", self.name, ids)
+        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", batch.entity.name, self.name, batch.size, ids)
 
     def wait_until_all_requests_processed(self, batch, host, query_headers, logger):
         log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size,
@@ -83,7 +83,7 @@ class Async(Method):
                        ' ItemID: ' + str(i) + ' ' + Reporting.MESSAGE_ITEM_SENT)
             batch.elapsed_sum += response.elapsed.total_seconds()
             batch.bulk_uuids.append(response.json()['bulk_uuid'])
-        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", self.name, ids)
+        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", batch.entity.name, self.name, batch.size, ids)
 
 
 class Bulk(Method):
@@ -104,22 +104,25 @@ class Bulk(Method):
         log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size, Reporting.MESSAGE_ITEM_SENT)
         batch.bulk_uuids.append(response.json()['bulk_uuid'])
         batch.elapsed_sum = response.elapsed.total_seconds()
-        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", self.name, ids)
+        Reporting.save_ids_list(Reporting.PATH_TO_SAVE_FOLDER + "/", batch.entity.name, self.name, batch.size, ids)
 
 
 class BulkUpdatePricesWithinOneDict(Method):
     name = 'Bulk update prices within one dict'
-    item_ids = []
+    run_id = None
+    batch_size = 0
 
-    def __init__(self, item_ids):
-        self.item_ids = item_ids
+    def __init__(self, run_id, batch_size):
+        self.run_id = run_id
+        self.batch_size = batch_size
 
     def send_batch(self, batch, host, query_headers, logger):
         log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size,
                    Reporting.MESSAGE_SENDING_STARTED)
-        request = [{'prices': []}]
-        for item_id in self.item_ids:
-            request[0]['prices'].append(batch.entity.create_request_body(item_id)['prices'])
+        request = [{"prices": []}]
+        item_ids = [str(self.run_id) + "_" + str(i) for i in range(1, self.batch_size + 1)]
+        for item_id in item_ids:
+            request[0]["prices"].append(batch.entity.create_request_body(item_id)["prices"][0])
         response = requests.post(host + '/rest/async/bulk/V1/' + batch.entity.create_endpoint_key,
                                  headers=query_headers,
                                  json=request)
@@ -130,16 +133,19 @@ class BulkUpdatePricesWithinOneDict(Method):
 
 class BulkUpdatePricesWithinListOfDicts(Method):
     name = 'Bulk update prices within list of dicts'
-    item_ids = []
+    run_id = None
+    batch_size = 0
 
-    def __init__(self, item_ids):
-        self.item_ids = item_ids
+    def __init__(self, run_id, batch_size):
+        self.run_id = run_id
+        self.batch_size = batch_size
 
     def send_batch(self, batch, host, query_headers, logger):
         log_record(logger, batch.entity.name, batch.start_timestamp, self.name, batch.size,
                    Reporting.MESSAGE_SENDING_STARTED)
         request = []
-        for item_id in self.item_ids:
+        item_ids = [str(self.run_id) + "_" + str(i) for i in range(1, self.batch_size + 1)]
+        for item_id in item_ids:
             request.append(batch.entity.create_request_body(item_id))
         response = requests.post(host + '/rest/async/bulk/V1/' + batch.entity.create_endpoint_key,
                                  headers=query_headers,

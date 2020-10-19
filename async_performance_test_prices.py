@@ -14,16 +14,12 @@ from src.Methods import BulkUpdatePricesWithinOneDict, BulkUpdatePricesWithinLis
 host = sys.argv[1]
 token = sys.argv[2]
 batch_size = int(sys.argv[3])
-ids_file_name = sys.argv[4]
-
-ids_file = open(ids_file_name, "r")
-ids = ids_file.read().splitlines()
-ids_file.close()
+run_id = sys.argv[4]
 
 query_headers = {'Authorization': 'Bearer ' + token}
 
 entity = Price()
-methods = [BulkUpdatePricesWithinOneDict(ids), BulkUpdatePricesWithinListOfDicts(ids)]
+methods = [BulkUpdatePricesWithinOneDict(run_id, batch_size)]
 
 elapsed_sum = {i: {batch_size: 0} for i in methods}
 total_time = {i: {batch_size: 0} for i in methods}
@@ -59,8 +55,7 @@ if __name__ == '__main__':
         elapsed_sum[method][batch_size] = batch.elapsed_sum
         endpoint = host + '/rest/V1/' + entity.search_endpoint_key + '?searchCriteria[pageSize]=' + str(
             batch_size) + '&searchCriteria[filterGroups][0][filters][0][field]=' + entity.search_by_field + \
-                   '&searchCriteria[filterGroups][0][filters][0][value]=' + method.name + '_' + str(
-            batch.start_timestamp) + '%25&searchCriteria[filterGroups][0][filters][0][condition_type]=like'
+                   '&searchCriteria[filterGroups][0][filters][0][value]=' + str(run_id) + '%25&searchCriteria[filterGroups][0][filters][0][condition_type]=like' + '&searchCriteria[filterGroups][1][filters][0][field]=price&searchCriteria[filterGroups][1][filters][0][value]=' + str(entity.price)
         response = requests.get(endpoint, headers=query_headers)
         updated_items = response.json()
         updated_items_count = int(updated_items['total_count'])

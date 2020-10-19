@@ -38,7 +38,7 @@ def log_record(logger, entity_name, run_id, method_name, batch_size, message):
         method_name) + ' Batch size: ' + str(batch_size) + ' ' + str(message))
 
 
-def save_ids_list(path_to_save,  method, ids):
-    with open(path_to_save + method + '_ids.txt', 'w') as f:
+def save_ids_list(path_to_save,  entity, method, batch_size, ids):
+    with open(path_to_save + entity + '_' + method + '_' + str(batch_size) + '_ids.txt', 'w') as f:
         for item in ids:
             f.write("%s\n" % item)

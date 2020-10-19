@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+import random
 
 
 class Batch():
@@ -128,15 +129,16 @@ class Customer(Entity):
 
 class Price(Entity):
     name = 'Price'
-    create_endpoint_key = 'prices'
+    create_endpoint_key = 'products/base-prices'
     search_endpoint_key = 'products'
     search_by_field = 'sku'
+    price = random.randint(1, 1500)
 
     def create_request_body(self, item_id):
         return {
             "prices": [
                 {
-                    "price": 20,
+                    "price": self.price,
                     "store_id": 0,
                     "sku": item_id
                 }
